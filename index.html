@@ -4,12 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>ĐTTN 2026 - Điều tra hộ</title>
+
+<!-- ============================================================ -->
+<!-- FIREBASE SDK - Tự động tải từ CDN, không cần cài đặt gì thêm -->
+<!-- ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#0f172a;font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
 .header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .header h1{font-size:16px;font-weight:700;margin-bottom:4px}
-.header .sub{font-size:12px;opacity:.9}
+.header .sub{font-size:12px;opacity:.9;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.sync-indicator{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.15);margin-left:6px}
+.sync-indicator .dot{width:7px;height:7px;border-radius:50%;background:#94a3b8}
+.sync-indicator.synced .dot{background:#4ade80}
+.sync-indicator.syncing .dot{background:#fbbf24;animation:pulse 1s infinite}
+.sync-indicator.error .dot{background:#ef4444}
+.sync-indicator.offline .dot{background:#94a3b8}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .progress-bar{height:6px;background:rgba(255,255,255,.3);border-radius:3px;margin-top:8px;overflow:hidden}
 .progress-fill{height:100%;background:#4ade80;border-radius:3px;transition:width .3s}
 .tabs{display:flex;overflow-x:auto;background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:90}
@@ -46,7 +60,6 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .card-body{flex:1;min-width:0}
 .card-name{font-weight:600;font-size:15px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-meta{font-size:12px;color:#64748b;display:flex;gap:10px;flex-wrap:wrap}
-.card-note{font-size:11px;color:#f59e0b;margin-top:3px;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-badges{display:flex;gap:4px;margin-top:4px}
 .badge-done{background:#dcfce7;color:#166534;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:600}
 .badge-progress{background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:600}
@@ -71,7 +84,6 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:15px;background:#f8fafc;outline:none;font-family:inherit}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#3b82f6;background:#fff}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .survey-section{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;overflow:hidden}
 .survey-section-header{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;background:#f8fafc;user-select:none}
 .survey-section-header.open{background:#eff6ff;border-bottom:1px solid #dbeafe}
@@ -108,7 +120,12 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 
 <div class="header">
   <h1>ĐTTN 2026 — Thu thập thông tin hộ</h1>
-  <div class="sub" id="headerSub">Đang tải...</div>
+  <div class="sub">
+    <span id="headerSub">Đang tải...</span>
+    <span class="sync-indicator offline" id="syncIndicator">
+      <span class="dot"></span><span id="syncText">Chưa kết nối</span>
+    </span>
+  </div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
@@ -123,6 +140,7 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
     <option value="2">2 - Hộ mới</option>
     <option value="3">3 - HSSV</option>
   </select>
+  <button class="btn btn-warn" id="pullBtn" title="Tải dữ liệu mới nhất từ Firebase">⬇️ Tải từ Firebase</button>
   <button class="btn btn-danger" id="deleteStatus0Btn" title="Xóa tất cả hộ trạng thái 0">🗑 Xóa hết hộ không điều tra</button>
   <button class="btn btn-success" id="exportBtn">📤 Xuất bảng kê</button>
   <button class="btn btn-primary" id="exportDetailBtn">📊 Xuất chi tiết</button>
@@ -192,7 +210,101 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 <div id="toast"></div>
 
 <script>
-/* ===================== DATA ===================== */
+/* ================================================================ */
+/* PHẦN 1: CẤU HÌNH FIREBASE                                        */
+/* ⚠️ BẠN PHẢI THAY 7 GIÁ TRỊ DƯỚI ĐÂY BẰNG THÔNG TIN TỪ FIREBASE  */
+/*    (Firebase Console → Project Settings → Your apps → SDK setup) */
+/* ================================================================ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyDVv2oS3MWbJsVl4MW_XyZoadKtW2vu0hc",
+  authDomain:        "dttn-2026.firebaseapp.com",
+  databaseURL:       "https://dttn-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "dttn-2026",
+  storageBucket:     "dttn-2026.firebasestorage.app",
+  messagingSenderId: "229245298763",
+  appId:             "1:229245298763:web:85983a9b1180561ca905ce"
+};
+
+/* ================================================================ */
+/* PHẦN 2: KHỞI TẠO FIREBASE                                        */
+/* ================================================================ */
+let db = null;
+let firebaseReady = false;
+
+try {
+  // Kiểm tra xem người dùng đã thay placeholder chưa
+  if (firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('PASTE_')) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    // Bật lưu trữ offline (giúp không mất dữ liệu khi mất mạng)
+    try { db.setPersistenceEnabled(true); } catch(e){ /* ignore */ }
+    firebaseReady = true;
+    console.log('✅ Firebase đã sẵn sàng');
+    updateSyncIndicator('ready', 'Sẵn sàng');
+  } else {
+    console.warn('⚠️ Firebase chưa được cấu hình — ứng dụng chỉ lưu offline');
+    updateSyncIndicator('offline', 'Offline');
+  }
+} catch(err) {
+  console.error('❌ Không thể khởi tạo Firebase:', err);
+  updateSyncIndicator('error', 'Lỗi cấu hình');
+}
+
+/* Cập nhật đèn báo trạng thái đồng bộ trên header */
+function updateSyncIndicator(state, text){
+  const el = document.getElementById('syncIndicator');
+  const txt = document.getElementById('syncText');
+  if(!el || !txt) return;
+  el.className = 'sync-indicator ' + state;
+  txt.textContent = text;
+}
+
+/* Hàm đẩy dữ liệu lên Firebase — tự động gọi mỗi khi có thay đổi */
+function saveToFirebase(){
+  if(!firebaseReady || !db) return;
+  updateSyncIndicator('syncing', 'Đang gửi...');
+  db.ref('dttn2026_data').set(households)
+    .then(()=>{
+      updateSyncIndicator('synced', 'Đã đồng bộ');
+      console.log('✅ Đã đồng bộ lên Firebase');
+    })
+    .catch((err)=>{
+      updateSyncIndicator('error', 'Lỗi đồng bộ');
+      console.error('❌ Lỗi đồng bộ:', err);
+    });
+}
+
+/* Hàm tải dữ liệu từ Firebase về máy (dùng khi đổi thiết bị/khôi phục) */
+function loadFromFirebase(){
+  if(!firebaseReady || !db){
+    toast('⚠️ Firebase chưa được cấu hình');
+    return;
+  }
+  if(!confirm('Tải dữ liệu mới nhất từ Firebase và GHI ĐÈ dữ liệu trên máy này?\nDữ liệu local chưa đồng bộ sẽ bị mất.')) return;
+  updateSyncIndicator('syncing', 'Đang tải...');
+  db.ref('dttn2026_data').once('value')
+    .then(snap=>{
+      const data = snap.val();
+      if(!data){ toast('ℹ️ Firebase chưa có dữ liệu'); updateSyncIndicator('synced', 'Đã đồng bộ'); return; }
+      households = data;
+      // Đảm bảo có đủ các địa bàn
+      Object.keys(AREAS).forEach(code=>{
+        if(!households[code]) households[code] = parseArea(code);
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(households));
+      renderAll();
+      updateSyncIndicator('synced', 'Đã tải về');
+      toast('✅ Đã tải dữ liệu từ Firebase');
+    })
+    .catch(err=>{
+      updateSyncIndicator('error', 'Lỗi tải');
+      toast('❌ Không thể tải: ' + err.message);
+    });
+}
+
+/* ================================================================ */
+/* PHẦN 3: DỮ LIỆU GỐC (DANH SÁCH HỘ BAN ĐẦU)                       */
+/* ================================================================ */
 const AREAS = {
   "001": { name: "Thôn Kạch Lớn 1", short: "Kạch Lớn 1",
     data: [
@@ -301,7 +413,9 @@ const AREAS = {
   }
 };
 
-/* ===================== STATE ===================== */
+/* ================================================================ */
+/* PHẦN 4: STATE & HELPERS                                          */
+/* ================================================================ */
 const STORAGE_KEY = 'dttn2026_v2';
 let state = { currentArea: '001', search: '', statusFilter: '' };
 let households = {};
@@ -310,10 +424,16 @@ let currentSurvey = null;
 let currentHouseholdIdx = -1;
 let selectedStt = new Set();
 
-/* ===================== HELPERS ===================== */
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function num(v){ const n = parseFloat(v); return isNaN(n)?0:n; }
 function fmt(n){ return (Math.round(n)||0).toLocaleString('vi-VN'); }
+
+function parseArea(code){
+  return AREAS[code].data.map(line=>{
+    const [stt,name,total,female,status] = line.split('|');
+    return { stt, name, total: parseInt(total)||0, female: parseInt(female)||0, status: parseInt(status)||1, note:'' };
+  });
+}
 
 function defaultSurvey(){
   return {
@@ -365,21 +485,30 @@ function loadData(){
   }catch(e){ households = {}; }
   Object.keys(AREAS).forEach(code=>{
     if(!households[code] || !households[code].length){
-      households[code] = AREAS[code].data.map(line=>{
-        const [stt,name,total,female,status] = line.split('|');
-        return { stt, name, total: parseInt(total)||0, female: parseInt(female)||0, status: parseInt(status)||1, note:'' };
-      });
+      households[code] = parseArea(code);
     }
   });
 }
-function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(households)); }
+
+/* ================================================================ */
+/* PHẦN 5: LƯU DỮ LIỆU (LOCAL + FIREBASE)                          */
+/* ================================================================ */
+function saveData(){
+  // Luôn lưu local trước (để dùng offline)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(households));
+  // Sau đó tự động đẩy lên Firebase
+  saveToFirebase();
+}
+
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200);
 }
 
-/* ===================== SELECTION ===================== */
+/* ================================================================ */
+/* PHẦN 6: SELECTION                                                */
+/* ================================================================ */
 function toggleSelect(stt){
   if(selectedStt.has(stt)) selectedStt.delete(stt);
   else selectedStt.add(stt);
@@ -417,7 +546,9 @@ function clearSelection(){
   renderSelBar();
 }
 
-/* ===================== RENDER LIST ===================== */
+/* ================================================================ */
+/* PHẦN 7: RENDER LIST                                              */
+/* ================================================================ */
 function renderTabs(){
   const el = document.getElementById('tabs');
   el.innerHTML = Object.keys(AREAS).map(code=>{
@@ -518,7 +649,9 @@ function renderList(){
 
 function renderAll(){ renderTabs(); renderStats(); renderList(); renderProgress(); renderSelBar(); }
 
-/* ===================== SURVEY FORM ===================== */
+/* ================================================================ */
+/* PHẦN 8: SURVEY FORM (7 MỤC)                                      */
+/* ================================================================ */
 const RELATIONS = ['Chủ hộ','Vợ/chồng','Con','Bố/mẹ','Anh/chị/em','Ông/bà','Cháu','Khác'];
 const GENDERS = ['Nam','Nữ'];
 const EDUCATION = ['Mù chữ','Tiểu học','THCS','THPT','Trung cấp','CĐ/ĐH','Sau ĐH'];
@@ -757,7 +890,9 @@ function closeSurvey(){
   renderAll();
 }
 
-/* ===================== DELETE ALL STATUS 0 ===================== */
+/* ================================================================ */
+/* PHẦN 9: DELETE / ADD / EXPORT                                    */
+/* ================================================================ */
 function deleteStatus0(){
   const list = households[state.currentArea];
   const toDelete = list.filter(h=>h.status===0);
@@ -770,7 +905,6 @@ function deleteStatus0(){
   toast(`🗑 Đã xoá ${toDelete.length} hộ`);
 }
 
-/* ===================== ADD HOUSEHOLD ===================== */
 function openAdd(){
   const list = households[state.currentArea];
   document.getElementById('newStt').value = String(list.length+1).padStart(4,'0');
@@ -801,7 +935,6 @@ function saveAdd(){
   toast('✅ Đã thêm hộ');
 }
 
-/* ===================== EXPORT ===================== */
 function exportBasic(){
   const rows = [['Địa bàn','STT nhà','Hộ số','Họ và tên chủ hộ','Địa chỉ','Điện thoại','Số NKTTTT','NKTTTT Nữ','Trạng thái','Ghi chú']];
   Object.keys(AREAS).forEach(code=>{
@@ -846,12 +979,15 @@ function downloadCSV(rows, name){
   toast('📤 Đã xuất file');
 }
 
-/* ===================== INIT ===================== */
+/* ================================================================ */
+/* PHẦN 10: KHỞI TẠO & GẮN SỰ KIỆN                                  */
+/* ================================================================ */
 document.getElementById('search').oninput = e=>{ state.search = e.target.value; renderList(); };
 document.getElementById('statusFilter').onchange = e=>{ state.statusFilter = e.target.value; renderList(); };
 document.getElementById('deleteStatus0Btn').onclick = deleteStatus0;
 document.getElementById('exportBtn').onclick = exportBasic;
 document.getElementById('exportDetailBtn').onclick = exportDetail;
+document.getElementById('pullBtn').onclick = loadFromFirebase;
 document.getElementById('fabAdd').onclick = openAdd;
 document.getElementById('addSaveBtn').onclick = saveAdd;
 document.getElementById('surveyClose').onclick = closeSurvey;
@@ -866,6 +1002,15 @@ document.getElementById('addOverlay').onclick = e=>{ if(e.target.id==='addOverla
 document.getElementById('selDeleteBtn').onclick = deleteSelected;
 document.getElementById('selClearBtn').onclick = clearSelection;
 
+/* Theo dõi trạng thái kết nối mạng để cập nhật đèn báo */
+window.addEventListener('online', ()=>{
+  if(firebaseReady) updateSyncIndicator('ready', 'Sẵn sàng');
+});
+window.addEventListener('offline', ()=>{
+  updateSyncIndicator('offline', 'Mất mạng');
+});
+
+/* Khởi động ứng dụng */
 loadData();
 renderAll();
 </script>
