@@ -98,8 +98,7 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .survey-section-body{display:none;padding:14px}
 .survey-section-body.open{display:block}
 
-/* Card layout for table rows */
-.radio-group{display:flex;gap:15px;margin-bottom:12px;align-items:center;font-weight:600}
+.radio-group{display:flex;gap:15px;margin-bottom:12px;align-items:center;font-weight:600;flex-wrap:wrap}
 .radio-group label{display:flex;align-items:center;gap:5px;font-weight:normal;cursor:pointer}
 .row-card{border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin-bottom:12px;background:#fafbfc}
 .row-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px dashed #cbd5e1;padding-bottom:5px}
@@ -111,7 +110,6 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .totals-box .row.total{font-weight:700;font-size:15px;color:#1e40af;padding-top:8px;margin-top:6px;border-top:1.5px dashed #93c5fd}
 .totals-box .row.pc{font-weight:700;font-size:14px;color:#166534;background:#dcfce7;margin:8px -12px -12px;padding:10px 12px;border-radius:0 0 10px 10px}
 
-/* Selection bar */
 .sel-bar{position:fixed;left:0;right:0;bottom:0;background:#0f172a;color:#fff;padding:10px 14px;display:none;align-items:center;gap:8px;z-index:150;box-shadow:0 -4px 16px rgba(0,0,0,.25)}
 .sel-bar.show{display:flex}
 .sel-bar .info{flex:1;font-size:13px;line-height:1.3}
@@ -437,7 +435,13 @@ function parseArea(code){
 
 function defaultSurvey(){
   return {
-    m1: { hasIncome:'1', actualMembers:'', femaleMembers:'', rows: [] },
+    m0: { 
+      chuHo: '', gioiTinhChuHo: 'Nam', danToc: 'Kinh', 
+      nguoiTraLoi: '', quanHe: 'Chủ hộ', dienThoai: '', 
+      actualMembers: '', femaleMembers: '', 
+      loaiHo: '1', bienDong: '0', loaiNha: '1', dienTich: '', soHuu: '1' 
+    },
+    m1: { hasIncome:'1', rows: [] },
     m2: { hasIncome:'1', rows: [] },
     m3: { hasIncome:'1', rows: [] },
     m4: { hasIncome:'1', rows: [] },
@@ -448,14 +452,22 @@ function defaultSurvey(){
 }
 
 function ensureSurvey(h){
-  if(!h.survey || !h.survey.m1.hasIncome){
+  if(!h.survey || !h.survey.m1 || !h.survey.m1.hasIncome){
     h.survey = defaultSurvey();
   } else {
-    // Migration check: ensure arrays exist
     const d = defaultSurvey();
     for(let k in d){
       if(!h.survey[k]) h.survey[k] = d[k];
       if(d[k].rows && !Array.isArray(h.survey[k].rows)) h.survey[k].rows = [];
+    }
+    
+    // MIGRATION: Chuyển số nhân khẩu từ m1 sang m0 nếu m0 chưa có
+    if(!h.survey.m0) {
+      h.survey.m0 = defaultSurvey().m0;
+    }
+    if(!h.survey.m0.actualMembers && h.survey.m1.actualMembers) {
+      h.survey.m0.actualMembers = h.survey.m1.actualMembers;
+      h.survey.m0.femaleMembers = h.survey.m1.femaleMembers;
     }
   }
   return h.survey;
@@ -467,7 +479,6 @@ function calcRowTotal(mKey, row){
     return n(row.c1) + n(row.c2) + n(row.c3);
   }
   if(mKey === 'm2' || mKey === 'm3' || mKey === 'm4' || mKey === 'm5' || mKey === 'm6'){
-    // Tổng thu = 1 + 2, Tổng CP = 4 + 5 + 6, Thu nhập = Tổng thu - Tổng CP
     const totalIn = n(row.c1) + n(row.c2);
     const totalOut = n(row.c4) + n(row.c5) + n(row.c6);
     return totalIn - totalOut;
@@ -494,14 +505,14 @@ function calcTotals(h){
   const m7 = s.m7.hasIncome === '2' ? 0 : (num(s.m7.r11) + num(s.m7.r12) + num(s.m7.r21) + num(s.m7.r22) + num(s.m7.r3));
 
   const total = m1 + m2 + m3 + m4 + m5 + m6 + m7;
-  const members = num(s.m1.actualMembers) || 1;
+  const members = num(s.m0?.actualMembers) || 1; // Lấy từ m0
 
   return { m1, m2, m3, m4, m5, m6, m7, total, perCapita: total/members, members };
 }
 
 function surveyIsDone(h){
-  if(!h.survey) return false;
-  return num(h.survey.m1.actualMembers) > 0 && calcTotals(h).total > 0;
+  if(!h.survey || !h.survey.m0) return false;
+  return num(h.survey.m0.actualMembers) > 0 && calcTotals(h).total > 0;
 }
 
 function loadLocalData(){
@@ -655,14 +666,15 @@ function deleteSelected(){
 }
 
 /* ================================================================ */
-/* SURVEY FORM (NEW STRUCTURE)                                      */
+/* SURVEY FORM                                                      */
 /* ================================================================ */
 function sectionHTML(n, title, bodyHTML){
+  const isOpen = n <= 1; // Mở m0 và m1 mặc định
   return `<div class="survey-section">
-    <div class="survey-section-header ${n===1?'open':''}" data-section="${n}">
+    <div class="survey-section-header ${isOpen?'open':''}" data-section="${n}">
       <div class="num">${n}</div><div class="title">${title}</div><div class="arrow">▶</div>
     </div>
-    <div class="survey-section-body ${n===1?'open':''}" data-body="${n}">${bodyHTML}</div>
+    <div class="survey-section-body ${isOpen?'open':''}" data-body="${n}">${bodyHTML}</div>
   </div>`;
 }
 
@@ -733,18 +745,82 @@ function renderM6Row(r, i){
 function buildSurveyHTML(h){
   const s = h.survey;
   
-  // MUC 1
-  let m1 = `<div class="form-row">
-      <div class="form-group"><label>Số nhân khẩu</label><input type="number" min="0" data-m1f="actualMembers" value="${esc(s.m1.actualMembers)}"></div>
-      <div class="form-group"><label>Trong đó nữ</label><input type="number" min="0" data-m1f="femaleMembers" value="${esc(s.m1.femaleMembers)}"></div>
+  // MUC 0
+  const m0 = `
+    <div class="form-row">
+      <div class="form-group"><label>Họ tên chủ hộ</label><input data-m0f="chuHo" value="${esc(s.m0.chuHo || h.name)}"></div>
+      <div class="form-group"><label>Giới tính chủ hộ</label>
+        <select data-m0f="gioiTinhChuHo">
+          <option value="Nam" ${s.m0.gioiTinhChuHo==='Nam'?'selected':''}>Nam</option>
+          <option value="Nữ" ${s.m0.gioiTinhChuHo==='Nữ'?'selected':''}>Nữ</option>
+        </select>
+      </div>
     </div>
-    <p style="font-size:12px;margin-bottom:8px;color:#64748b">Đơn vị tính: 1.000 đồng</p>
-    <div id="rows_m1">`;
+    <div class="form-row">
+      <div class="form-group"><label>Dân tộc</label><input data-m0f="danToc" value="${esc(s.m0.danToc)}"></div>
+      <div class="form-group"><label>Điện thoại</label><input type="tel" data-m0f="dienThoai" value="${esc(s.m0.dienThoai)}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Người trả lời</label><input data-m0f="nguoiTraLoi" value="${esc(s.m0.nguoiTraLoi)}"></div>
+      <div class="form-group"><label>Quan hệ với chủ hộ</label>
+        <select data-m0f="quanHe">
+          <option value="Chủ hộ" ${s.m0.quanHe==='Chủ hộ'?'selected':''}>Chủ hộ</option>
+          <option value="Vợ/chồng" ${s.m0.quanHe==='Vợ/chồng'?'selected':''}>Vợ/chồng</option>
+          <option value="Con" ${s.m0.quanHe==='Con'?'selected':''}>Con</option>
+          <option value="Khác" ${s.m0.quanHe==='Khác'?'selected':''}>Khác</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="background:#f8fafc;padding:10px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:12px">
+      <div class="form-group"><label style="color:#1e40af">Số nhân khẩu thực tế</label><input type="number" min="0" data-m0f="actualMembers" value="${esc(s.m0.actualMembers)}"></div>
+      <div class="form-group"><label style="color:#1e40af">Trong đó nữ</label><input type="number" min="0" data-m0f="femaleMembers" value="${esc(s.m0.femaleMembers)}"></div>
+    </div>
+    
+    <div class="sub-label">Tình hình chung</div>
+    <div class="form-row">
+      <div class="form-group"><label>Loại hộ</label>
+        <select data-m0f="loaiHo">
+          <option value="1" ${s.m0.loaiHo==='1'?'selected':''}>1. Thường trú</option>
+          <option value="2" ${s.m0.loaiHo==='2'?'selected':''}>2. Tạm trú</option>
+          <option value="3" ${s.m0.loaiHo==='3'?'selected':''}>3. Tạm vắng</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Biến động 12 tháng qua</label>
+        <select data-m0f="bienDong">
+          <option value="0" ${s.m0.bienDong==='0'?'selected':''}>0. Không biến động</option>
+          <option value="1" ${s.m0.bienDong==='1'?'selected':''}>1. Có sinh / chết</option>
+          <option value="2" ${s.m0.bienDong==='2'?'selected':''}>2. Có chuyển đi / đến</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sub-label">Thông tin nhà ở</div>
+    <div class="form-row">
+      <div class="form-group"><label>Loại nhà</label>
+        <select data-m0f="loaiNha">
+          <option value="1" ${s.m0.loaiNha==='1'?'selected':''}>1. Nhà riêng</option>
+          <option value="2" ${s.m0.loaiNha==='2'?'selected':''}>2. Chung cư</option>
+          <option value="3" ${s.m0.loaiNha==='3'?'selected':''}>3. Nhà thuê</option>
+          <option value="4" ${s.m0.loaiNha==='4'?'selected':''}>4. Khác</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Quyền sở hữu</label>
+        <select data-m0f="soHuu">
+          <option value="1" ${s.m0.soHuu==='1'?'selected':''}>1. Sở hữu</option>
+          <option value="2" ${s.m0.soHuu==='2'?'selected':''}>2. Thuê/Mượn</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Diện tích nhà ở (m2)</label><input type="number" min="0" data-m0f="dienTich" value="${esc(s.m0.dienTich)}"></div>
+  `;
+
+  // MUC 1
+  let m1 = radioHTML('m1', s.m1.hasIncome);
   if(s.m1.hasIncome === '1'){
+    m1 += `<div id="rows_m1">`;
     m1 += s.m1.rows.map((r,i)=>renderM1Row(r,i)).join('');
+    m1 += `</div><button class="btn btn-primary btn-block add-row" data-m="m1" style="margin-top:8px">+ Thêm thành viên</button>`;
   }
-  m1 += `</div>
-    ${s.m1.hasIncome === '1' ? `<button class="btn btn-primary btn-block add-row" data-m="m1" style="margin-top:8px">+ Thêm thành viên</button>` : ''}`;
   
   // MUC 2-5 Generic
   const buildGeneric = (key, title) => {
@@ -781,6 +857,7 @@ function buildSurveyHTML(h){
   }
 
   return `<div style="background:#e0e7ff;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;color:#3730a3;font-weight:600">💡 Đơn vị tính: 1.000 đồng</div>
+    ${sectionHTML(0, 'Mục 0: Thông tin chung', m0)}
     ${sectionHTML(1, 'Mục 1: Thu nhập từ tiền lương, tiền công', m1)}
     ${sectionHTML(2, 'Mục 2: Thu nhập từ trồng trọt', buildGeneric('m2', 'Trồng trọt'))}
     ${sectionHTML(3, 'Mục 3: Thu nhập từ chăn nuôi', buildGeneric('m3', 'Chăn nuôi'))}
@@ -793,7 +870,6 @@ function buildSurveyHTML(h){
 
 function setHasIncome(key, val){
   currentSurvey[key].hasIncome = val;
-  // Re-render the specific section body
   const body = document.getElementById('surveyBody');
   body.innerHTML = buildSurveyHTML(currentHousehold);
   bindSurveyEvents();
@@ -803,15 +879,15 @@ function setHasIncome(key, val){
 function bindSurveyEvents(){
   const body = document.getElementById('surveyBody');
   
-  // Scalar M1 inputs
-  body.querySelectorAll('[data-m1f]').forEach(inp=>{
-    inp.oninput = ()=>{
-      currentSurvey.m1[inp.dataset.m1f] = inp.value;
-      updateTotals();
+  // M0 Scalars
+  body.querySelectorAll('[data-m0f]').forEach(inp=>{
+    inp.oninput = inp.onchange = ()=>{
+      currentSurvey.m0[inp.dataset.m0f] = inp.value;
+      if(inp.dataset.m0f === 'actualMembers') updateTotals(); // Tính lại TNBQ
     };
   });
 
-  // Scalar M7 inputs
+  // M7 Scalars
   body.querySelectorAll('[data-m7f]').forEach(inp=>{
     inp.oninput = ()=>{
       currentSurvey.m7[inp.dataset.m7f] = inp.value;
@@ -834,7 +910,7 @@ function bindSurveyEvents(){
       if(confirm('Xóa dòng này?')){
         const m = b.dataset.m, idx = parseInt(b.dataset.idx);
         currentSurvey[m].rows.splice(idx, 1);
-        setHasIncome(m, currentSurvey[m].hasIncome); // force re-render
+        setHasIncome(m, currentSurvey[m].hasIncome); 
       }
     };
   });
@@ -844,7 +920,7 @@ function bindSurveyEvents(){
     b.onclick = ()=>{
       const m = b.dataset.m;
       currentSurvey[m].rows.push({});
-      setHasIncome(m, currentSurvey[m].hasIncome); // force re-render
+      setHasIncome(m, currentSurvey[m].hasIncome); 
     };
   });
 
@@ -939,7 +1015,7 @@ function exportBasic(){
   const rows = [['Địa bàn','STT','Tên chủ hộ','SĐT','Số khẩu','Nữ','Trạng thái','Ghi chú']];
   Object.keys(AREAS).forEach(code=>{
     (households[code]||[]).forEach(h=>{
-      rows.push([AREAS[code].name, h.stt, h.name, h.survey?.m1?.phone||'', h.total, h.female, h.status, h.note]);
+      rows.push([AREAS[code].name, h.stt, h.name, h.survey?.m0?.dienThoai||'', h.total, h.female, h.status, h.note]);
     });
   });
   downloadCSV(rows, 'BangKeHo');
@@ -951,7 +1027,7 @@ function exportDetail(){
     (households[code]||[]).forEach(h=>{
       if(h.status === 0) return;
       const t = calcTotals(h);
-      rows.push([AREAS[code].name, h.stt, h.name, h.survey?.m1?.actualMembers||0, 
+      rows.push([AREAS[code].name, h.stt, h.name, h.survey?.m0?.actualMembers||0, 
         t.m1, t.m2, t.m3, t.m4, t.m5, t.m6, t.m7, t.total, Math.round(t.perCapita)]);
     });
   });
