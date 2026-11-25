@@ -65,9 +65,11 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .card-del{width:40px;height:40px;border-radius:10px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;transition:all .15s}
 .card-del:active{transform:scale(.9)}
 .card-del.on{background:#ef4444;border-color:#ef4444;color:#fff}
+
+/* MODAL STYLES */
 .overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.show{display:flex}
-.modal{background:#fff;width:100%;max-width:600px;max-height:95vh;border-radius:20px 20px 0 0;overflow-y:auto;animation:slideUp .25s ease;display:flex;flex-direction:column}
+.modal{background:#fff;width:100%;max-width:700px;max-height:95vh;border-radius:20px 20px 0 0;overflow-y:auto;animation:slideUp .25s ease;display:flex;flex-direction:column}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-header{position:sticky;top:0;background:#fff;padding:12px 16px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;z-index:10;gap:10px}
 .modal-header .titles{flex:1;min-width:0}
@@ -77,11 +79,15 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .modal-body{padding:14px 16px 90px;overflow-y:auto;flex:1}
 .modal-footer{position:sticky;bottom:0;background:#fff;padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;gap:10px;z-index:10}
 .modal-footer .btn{flex:1;justify-content:center;padding:12px;font-size:15px}
+
+/* SURVEY FORM STYLES */
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-size:13px;font-weight:600;color:#475569;margin-bottom:4px}
 .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:15px;background:#f8fafc;outline:none;font-family:inherit}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#3b82f6;background:#fff}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
 .survey-section{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;overflow:hidden}
 .survey-section-header{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;background:#f8fafc;user-select:none}
 .survey-section-header.open{background:#eff6ff;border-bottom:1px solid #dbeafe}
@@ -91,15 +97,21 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .survey-section-header.open .arrow{transform:rotate(90deg)}
 .survey-section-body{display:none;padding:14px}
 .survey-section-body.open{display:block}
-.member-card,.job-card{border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fafbfc}
-.member-header,.job-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.member-header b,.job-header b{font-size:13px;color:#334155}
+
+/* Card layout for table rows */
+.radio-group{display:flex;gap:15px;margin-bottom:12px;align-items:center;font-weight:600}
+.radio-group label{display:flex;align-items:center;gap:5px;font-weight:normal;cursor:pointer}
+.row-card{border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin-bottom:12px;background:#fafbfc}
+.row-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px dashed #cbd5e1;padding-bottom:5px}
+.row-header b{font-size:13px;color:#334155}
 .btn-icon{background:#fee2e2;color:#991b1b;border:none;border-radius:6px;padding:4px 8px;font-size:13px;cursor:pointer}
-.empty-small{text-align:center;padding:16px;color:#94a3b8;font-size:13px;background:#f8fafc;border-radius:8px;margin-bottom:8px}
+.sub-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px;margin-top:8px}
 .totals-box{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:10px;padding:12px;margin:10px 0;font-size:13px}
 .totals-box .row{display:flex;justify-content:space-between;padding:3px 0}
 .totals-box .row.total{font-weight:700;font-size:15px;color:#1e40af;padding-top:8px;margin-top:6px;border-top:1.5px dashed #93c5fd}
 .totals-box .row.pc{font-weight:700;font-size:14px;color:#166534;background:#dcfce7;margin:8px -12px -12px;padding:10px 12px;border-radius:0 0 10px 10px}
+
+/* Selection bar */
 .sel-bar{position:fixed;left:0;right:0;bottom:0;background:#0f172a;color:#fff;padding:10px 14px;display:none;align-items:center;gap:8px;z-index:150;box-shadow:0 -4px 16px rgba(0,0,0,.25)}
 .sel-bar.show{display:flex}
 .sel-bar .info{flex:1;font-size:13px;line-height:1.3}
@@ -154,6 +166,7 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
   <button class="btn btn-danger" id="selDeleteBtn">🗑 Xóa</button>
 </div>
 
+<!-- Survey modal -->
 <div class="overlay" id="surveyOverlay">
   <div class="modal" id="surveyModal">
     <div class="modal-header">
@@ -171,6 +184,7 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
   </div>
 </div>
 
+<!-- Add household modal -->
 <div class="overlay" id="addOverlay">
   <div class="modal" style="max-height:90vh">
     <div class="modal-header">
@@ -247,26 +261,16 @@ function updateSyncIndicator(state, text){
   txt.textContent = text;
 }
 
-/* Đẩy dữ liệu lên Firebase — trả về Promise để chờ xác nhận */
 function saveToFirebase(){
   return new Promise((resolve, reject)=>{
     if(!firebaseReady || !db){ resolve(false); return; }
     updateSyncIndicator('syncing', 'Đang gửi...');
     db.ref('dttn2026_data').set(households)
-      .then(()=>{
-        updateSyncIndicator('synced', 'Đã đồng bộ');
-        console.log('✅ Đã đẩy dữ liệu lên Firebase');
-        resolve(true);
-      })
-      .catch(err=>{
-        updateSyncIndicator('error', 'Lỗi đồng bộ');
-        console.error('❌ Lỗi đẩy Firebase:', err);
-        reject(err);
-      });
+      .then(()=>{ updateSyncIndicator('synced', 'Đã đồng bộ'); resolve(true); })
+      .catch(err=>{ updateSyncIndicator('error', 'Lỗi đồng bộ'); reject(err); });
   });
 }
 
-/* Tải toàn bộ dữ liệu mới nhất từ Firebase (ghi đè local) */
 function loadFromFirebase(silent){
   return new Promise((resolve, reject)=>{
     if(!firebaseReady || !db){ resolve(false); return; }
@@ -276,29 +280,20 @@ function loadFromFirebase(silent){
         const data = snap.val();
         if(!data){
           if(!silent) toast('ℹ️ Firebase chưa có dữ liệu');
-          updateSyncIndicator('synced', 'Trống');
-          resolve(false); return;
+          updateSyncIndicator('synced', 'Trống'); resolve(false); return;
         }
         households = data;
-        Object.keys(AREAS).forEach(code=>{
-          if(!households[code]) households[code] = parseArea(code);
-        });
+        Object.keys(AREAS).forEach(code=>{ if(!households[code]) households[code] = parseArea(code); });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(households));
         renderAll();
         updateSyncIndicator('synced', 'Đã tải về');
-        if(!silent) toast('✅ Đã tải dữ liệu mới nhất từ Firebase');
+        if(!silent) toast('✅ Đã tải dữ liệu mới nhất');
         resolve(true);
       })
-      .catch(err=>{
-        updateSyncIndicator('error', 'Lỗi tải');
-        console.error('❌ Lỗi tải Firebase:', err);
-        if(!silent) toast('❌ Không thể tải: ' + err.message);
-        reject(err);
-      });
+      .catch(err=>{ updateSyncIndicator('error', 'Lỗi tải'); reject(err); });
   });
 }
 
-/* Lắng nghe thay đổi realtime — khi thiết bị khác sửa, máy này tự cập nhật */
 function startRealtimeListener(){
   if(!firebaseReady || !db || firebaseListenerOn) return;
   firebaseListenerOn = true;
@@ -308,9 +303,7 @@ function startRealtimeListener(){
     const newStr = JSON.stringify(data);
     if(newStr === JSON.stringify(households)) return;
     households = data;
-    Object.keys(AREAS).forEach(code=>{
-      if(!households[code]) households[code] = parseArea(code);
-    });
+    Object.keys(AREAS).forEach(code=>{ if(!households[code]) households[code] = parseArea(code); });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(households));
     renderAll();
     updateSyncIndicator('synced', 'Đã đồng bộ');
@@ -421,7 +414,7 @@ const AREAS = {
 };
 
 /* ================================================================ */
-/* STATE & HELPERS                                                   */
+/* STATE & HELPERS                                                  */
 /* ================================================================ */
 const STORAGE_KEY = 'dttn2026_v2';
 let state = { currentArea: '001', search: '', statusFilter: '' };
@@ -444,61 +437,83 @@ function parseArea(code){
 
 function defaultSurvey(){
   return {
-    m1: { actualMembers:'', femaleMembers:'', phone:'', address:'', householdType:'1', interviewDate:'', respondent:'', note:'' },
-    m2: { members: [] },
-    m3: { jobs: [] },
-    m4: { salary:'', allowance:'', bonus:'', other:'' },
-    m5: { crop:'', livestock:'', forestry:'', fishery:'', cost:'' },
-    m6: { business:'', service:'', craft:'', rental:'', cost:'' },
-    m7: { pension:'', socialAllowance:'', gift:'', remittance:'', other:'' }
+    m1: { hasIncome:'1', actualMembers:'', femaleMembers:'', rows: [] },
+    m2: { hasIncome:'1', rows: [] },
+    m3: { hasIncome:'1', rows: [] },
+    m4: { hasIncome:'1', rows: [] },
+    m5: { hasIncome:'1', rows: [] },
+    m6: { hasIncome:'1', rows: [] },
+    m7: { hasIncome:'1', r11:'', r12:'', r21:'', r22:'', r3:'' }
   };
 }
 
 function ensureSurvey(h){
-  if(!h.survey){ h.survey = defaultSurvey(); }
-  const d = defaultSurvey();
-  for(const k in d){ if(!h.survey[k]) h.survey[k] = d[k]; }
-  if(!Array.isArray(h.survey.m2.members)) h.survey.m2.members = [];
-  if(!Array.isArray(h.survey.m3.jobs)) h.survey.m3.jobs = [];
+  if(!h.survey || !h.survey.m1.hasIncome){
+    h.survey = defaultSurvey();
+  } else {
+    // Migration check: ensure arrays exist
+    const d = defaultSurvey();
+    for(let k in d){
+      if(!h.survey[k]) h.survey[k] = d[k];
+      if(d[k].rows && !Array.isArray(h.survey[k].rows)) h.survey[k].rows = [];
+    }
+  }
   return h.survey;
 }
 
+function calcRowTotal(mKey, row){
+  const n = (v)=>parseFloat(v)||0;
+  if(mKey === 'm1'){
+    return n(row.c1) + n(row.c2) + n(row.c3);
+  }
+  if(mKey === 'm2' || mKey === 'm3' || mKey === 'm4' || mKey === 'm5' || mKey === 'm6'){
+    // Tổng thu = 1 + 2, Tổng CP = 4 + 5 + 6, Thu nhập = Tổng thu - Tổng CP
+    const totalIn = n(row.c1) + n(row.c2);
+    const totalOut = n(row.c4) + n(row.c5) + n(row.c6);
+    return totalIn - totalOut;
+  }
+  return 0;
+}
+
 function calcTotals(h){
-  if(!h.survey) return { m4:0, m5:0, m6:0, m7:0, total:0, perCapita:0, members:0 };
+  if(!h.survey) return { m1:0, m2:0, m3:0, m4:0, m5:0, m6:0, m7:0, total:0, perCapita:0, members:0 };
   const s = h.survey;
-  const m4 = num(s.m4.salary) + num(s.m4.allowance) + num(s.m4.bonus) + num(s.m4.other);
-  const m5 = num(s.m5.crop) + num(s.m5.livestock) + num(s.m5.forestry) + num(s.m5.fishery) - num(s.m5.cost);
-  const m6 = num(s.m6.business) + num(s.m6.service) + num(s.m6.craft) + num(s.m6.rental) - num(s.m6.cost);
-  const m7 = num(s.m7.pension) + num(s.m7.socialAllowance) + num(s.m7.gift) + num(s.m7.remittance) + num(s.m7.other);
-  const total = m4 + m5 + m6 + m7;
+  
+  const sumRows = (key) => {
+    if(s[key].hasIncome === '2') return 0;
+    return s[key].rows.reduce((acc, row) => acc + calcRowTotal(key, row), 0);
+  };
+
+  const m1 = sumRows('m1');
+  const m2 = sumRows('m2');
+  const m3 = sumRows('m3');
+  const m4 = sumRows('m4');
+  const m5 = sumRows('m5');
+  const m6 = sumRows('m6');
+  
+  const m7 = s.m7.hasIncome === '2' ? 0 : (num(s.m7.r11) + num(s.m7.r12) + num(s.m7.r21) + num(s.m7.r22) + num(s.m7.r3));
+
+  const total = m1 + m2 + m3 + m4 + m5 + m6 + m7;
   const members = num(s.m1.actualMembers) || 1;
-  return { m4, m5, m6, m7, total, perCapita: total/members, members };
+
+  return { m1, m2, m3, m4, m5, m6, m7, total, perCapita: total/members, members };
 }
 
 function surveyIsDone(h){
   if(!h.survey) return false;
-  const s = h.survey;
-  return (num(s.m1.actualMembers) > 0) &&
-    (num(s.m4.salary)+num(s.m4.allowance)+num(s.m4.bonus)+num(s.m4.other) +
-     num(s.m5.crop)+num(s.m5.livestock)+num(s.m5.forestry)+num(s.m5.fishery) +
-     num(s.m6.business)+num(s.m6.service)+num(s.m6.craft)+num(s.m6.rental) +
-     num(s.m7.pension)+num(s.m7.socialAllowance)+num(s.m7.gift)+num(s.m7.remittance)+num(s.m7.other) > 0);
+  return num(h.survey.m1.actualMembers) > 0 && calcTotals(h).total > 0;
 }
 
-/* Khởi tạo dữ liệu từ LocalStorage (nếu có) */
 function loadLocalData(){
   try{
     const saved = localStorage.getItem(STORAGE_KEY);
     if(saved){ households = JSON.parse(saved); }
   }catch(e){ households = {}; }
   Object.keys(AREAS).forEach(code=>{
-    if(!households[code] || !households[code].length){
-      households[code] = parseArea(code);
-    }
+    if(!households[code] || !households[code].length){ households[code] = parseArea(code); }
   });
 }
 
-/* Lưu dữ liệu: LocalStorage + Firebase */
 function saveData(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(households));
   saveToFirebase().catch(()=>{});
@@ -604,10 +619,7 @@ function renderList(){
     };
   });
   container.querySelectorAll('.card-del').forEach(b=>{
-    b.onclick = (e)=>{
-      e.stopPropagation();
-      toggleSelect(b.dataset.stt);
-    };
+    b.onclick = (e)=>{ e.stopPropagation(); toggleSelect(b.dataset.stt); };
   });
 }
 
@@ -616,8 +628,7 @@ function renderAll(){ renderTabs(); renderStats(); renderList(); renderProgress(
 function toggleSelect(stt){
   if(selectedStt.has(stt)) selectedStt.delete(stt);
   else selectedStt.add(stt);
-  renderList();
-  renderSelBar();
+  renderList(); renderSelBar();
 }
 
 function renderSelBar(){
@@ -633,73 +644,19 @@ function renderSelBar(){
   }
 }
 
-function clearSelection(){
-  selectedStt.clear();
-  renderList();
-  renderSelBar();
-}
+function clearSelection(){ selectedStt.clear(); renderList(); renderSelBar(); }
 
 function deleteSelected(){
   const n = selectedStt.size;
   if(!n) return;
   if(!confirm(`Xóa ${n} hộ đã chọn khỏi địa bàn này?\nThao tác không thể hoàn tác.`)) return;
-  
   households[state.currentArea] = households[state.currentArea].filter(h => !selectedStt.has(h.stt));
-  selectedStt.clear();
-  saveData();
-  renderAll();
-  toast(`🗑 Đã xóa ${n} hộ`);
+  selectedStt.clear(); saveData(); renderAll(); toast(`🗑 Đã xóa ${n} hộ`);
 }
 
 /* ================================================================ */
-/* SURVEY FORM                                                      */
+/* SURVEY FORM (NEW STRUCTURE)                                      */
 /* ================================================================ */
-const RELATIONS = ['Chủ hộ','Vợ/chồng','Con','Bố/mẹ','Anh/chị/em','Ông/bà','Cháu','Khác'];
-const GENDERS = ['Nam','Nữ'];
-const EDUCATION = ['Mù chữ','Tiểu học','THCS','THPT','Trung cấp','CĐ/ĐH','Sau ĐH'];
-const EMPLOYMENT = ['Có việc làm','Thất nghiệp','Không hoạt động','Nghỉ hưu','Đang đi học','Nội trợ'];
-const HOUSEHOLD_TYPE = {'1':'Thường trú','2':'Tạm trú','3':'Tạm vắng','4':'Khác'};
-const JOB_INDUSTRY = ['Nông-lâm-thủy sản','Công nghiệp-Xây dựng','Thương mại-Dịch vụ','Hành chính-Công chức','Khác'];
-
-function optList(arr, cur){
-  return arr.map(v=>`<option value="${esc(v)}" ${v===cur?'selected':''}>${esc(v)}</option>`).join('');
-}
-function optObj(obj, cur){
-  return Object.entries(obj).map(([k,v])=>`<option value="${k}" ${k===cur?'selected':''}>${v}</option>`).join('');
-}
-
-function memberCardHTML(i, m){
-  m = m || {};
-  return `<div class="member-card" data-idx="${i}">
-    <div class="member-header"><b>Thành viên ${i+1}</b><button class="btn-icon del-member" data-idx="${i}">🗑</button></div>
-    <div class="form-group"><label>Họ và tên</label><input data-mfield="name" value="${esc(m.name)}"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Quan hệ</label><select data-mfield="relation">${optList(RELATIONS, m.relation||'Con')}</select></div>
-      <div class="form-group"><label>Giới tính</label><select data-mfield="gender">${optList(GENDERS, m.gender||'Nam')}</select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Năm sinh</label><input type="number" data-mfield="birthYear" value="${esc(m.birthYear)}"></div>
-      <div class="form-group"><label>Dân tộc</label><input data-mfield="ethnicity" value="${esc(m.ethnicity||'Kinh')}"></div>
-    </div>
-    <div class="form-group"><label>Trình độ học vấn</label><select data-mfield="education">${optList(EDUCATION, m.education||'THPT')}</select></div>
-    <div class="form-group"><label>Tình trạng việc làm</label><select data-mfield="employment">${optList(EMPLOYMENT, m.employment||'Có việc làm')}</select></div>
-  </div>`;
-}
-
-function jobCardHTML(i, j){
-  j = j || {};
-  return `<div class="job-card" data-idx="${i}">
-    <div class="job-header"><b>Công việc ${i+1}</b><button class="btn-icon del-job" data-idx="${i}">🗑</button></div>
-    <div class="form-group"><label>Tên thành viên</label><input data-jfield="memberName" value="${esc(j.memberName)}"></div>
-    <div class="form-group"><label>Nghề nghiệp</label><input data-jfield="jobType" value="${esc(j.jobType)}"></div>
-    <div class="form-group"><label>Ngành kinh tế</label><select data-jfield="industry">${optList(JOB_INDUSTRY, j.industry||JOB_INDUSTRY[0])}</select></div>
-    <div class="form-row">
-      <div class="form-group"><label>Số tháng làm</label><input type="number" data-jfield="months" value="${esc(j.months)}" min="0" max="12"></div>
-      <div class="form-group"><label>Thu nhập/tháng</label><input type="number" data-jfield="monthlyIncome" value="${esc(j.monthlyIncome)}"></div>
-    </div>
-  </div>`;
-}
-
 function sectionHTML(n, title, bodyHTML){
   return `<div class="survey-section">
     <div class="survey-section-header ${n===1?'open':''}" data-section="${n}">
@@ -709,85 +666,193 @@ function sectionHTML(n, title, bodyHTML){
   </div>`;
 }
 
+function radioHTML(key, val){
+  return `<div class="radio-group">
+    <label><input type="radio" name="${key}" value="1" ${val==='1'?'checked':''} onchange="setHasIncome('${key}','1')"> 1. Có</label>
+    <label><input type="radio" name="${key}" value="2" ${val==='2'?'checked':''} onchange="setHasIncome('${key}','2')"> 2. Không</label>
+  </div>`;
+}
+
+function renderM1Row(r, i){
+  r = r || {};
+  return `<div class="row-card" data-idx="${i}">
+    <div class="row-header"><b>Thành viên ${i+1}</b><button class="btn-icon del-row" data-m="m1" data-idx="${i}">🗑</button></div>
+    <div class="form-group"><label>Họ tên</label><input data-m="m1" data-idx="${i}" data-f="name" value="${esc(r.name)}"></div>
+    <div class="form-group"><label>Mô tả công việc</label><input data-m="m1" data-idx="${i}" data-f="job" value="${esc(r.job)}"></div>
+    <div class="sub-label">Thu nhập (Nghìn đồng)</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Cột 1: Lương</label><input type="number" min="0" data-m="m1" data-idx="${i}" data-f="c1" value="${esc(r.c1)}"></div>
+      <div class="form-group"><label>Cột 2: Hưu/trợ cấp</label><input type="number" min="0" data-m="m1" data-idx="${i}" data-f="c2" value="${esc(r.c2)}"></div>
+      <div class="form-group"><label>Cột 3: Trợ cấp XH</label><input type="number" min="0" data-m="m1" data-idx="${i}" data-f="c3" value="${esc(r.c3)}"></div>
+    </div>
+  </div>`;
+}
+
+function renderGenericRow(mKey, r, i, titleLabel, c4Label, c5Label){
+  r = r || {};
+  return `<div class="row-card" data-idx="${i}">
+    <div class="row-header"><b>Mục ${i+1}</b><button class="btn-icon del-row" data-m="${mKey}" data-idx="${i}">🗑</button></div>
+    <div class="form-group"><label>${titleLabel}</label><input data-m="${mKey}" data-idx="${i}" data-f="name" value="${esc(r.name)}"></div>
+    
+    <div class="sub-label">Tổng thu</div>
+    <div class="form-row">
+      <div class="form-group"><label>Cột 1: Bán/Đổi</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c1" value="${esc(r.c1)}"></div>
+      <div class="form-group"><label>Cột 2: Để lại/Dùng</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c2" value="${esc(r.c2)}"></div>
+    </div>
+
+    <div class="sub-label">Chi phí</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Cột 4: ${c4Label}</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c4" value="${esc(r.c4)}"></div>
+      <div class="form-group"><label>Cột 5: ${c5Label}</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c5" value="${esc(r.c5)}"></div>
+      <div class="form-group"><label>Cột 6: Khác</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c6" value="${esc(r.c6)}"></div>
+    </div>
+  </div>`;
+}
+
+function renderM6Row(r, i){
+  r = r || {};
+  return `<div class="row-card" data-idx="${i}">
+    <div class="row-header"><b>Hoạt động ${i+1}</b><button class="btn-icon del-row" data-m="m6" data-idx="${i}">🗑</button></div>
+    <div class="form-group"><label>Mô tả hoạt động</label><input data-m="m6" data-idx="${i}" data-f="name" value="${esc(r.name)}"></div>
+    
+    <div class="sub-label">Tổng thu</div>
+    <div class="form-row">
+      <div class="form-group"><label>Cột 1: Giá trị bán</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c1" value="${esc(r.c1)}"></div>
+      <div class="form-group"><label>Cột 2: Giá trị dùng</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c2" value="${esc(r.c2)}"></div>
+    </div>
+
+    <div class="sub-label">Chi phí</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Cột 4: Nguyên vật liệu</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c4" value="${esc(r.c4)}"></div>
+      <div class="form-group"><label>Cột 5: Năng lượng</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c5" value="${esc(r.c5)}"></div>
+      <div class="form-group"><label>Cột 6: Chi khác</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c6" value="${esc(r.c6)}"></div>
+    </div>
+  </div>`;
+}
+
 function buildSurveyHTML(h){
   const s = h.survey;
-  const m1 = `<div class="form-group"><label>Địa chỉ đầy đủ</label><input data-s="m1" data-f="address" value="${esc(s.m1.address||AREAS[state.currentArea].name)}"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Số nhân khẩu thực tế</label><input type="number" min="0" data-s="m1" data-f="actualMembers" value="${esc(s.m1.actualMembers)}"></div>
-      <div class="form-group"><label>Trong đó nữ</label><input type="number" min="0" data-s="m1" data-f="femaleMembers" value="${esc(s.m1.femaleMembers)}"></div>
+  
+  // MUC 1
+  let m1 = `<div class="form-row">
+      <div class="form-group"><label>Số nhân khẩu</label><input type="number" min="0" data-m1f="actualMembers" value="${esc(s.m1.actualMembers)}"></div>
+      <div class="form-group"><label>Trong đó nữ</label><input type="number" min="0" data-m1f="femaleMembers" value="${esc(s.m1.femaleMembers)}"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Điện thoại</label><input type="tel" data-s="m1" data-f="phone" value="${esc(s.m1.phone)}"></div>
-      <div class="form-group"><label>Loại hộ</label><select data-s="m1" data-f="householdType">${optObj(HOUSEHOLD_TYPE, s.m1.householdType||'1')}</select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Ngày phỏng vấn</label><input type="date" data-s="m1" data-f="interviewDate" value="${esc(s.m1.interviewDate)}"></div>
-      <div class="form-group"><label>Người trả lời</label><input data-s="m1" data-f="respondent" value="${esc(s.m1.respondent)}"></div>
-    </div>
-    <div class="form-group"><label>Ghi chú</label><textarea rows="2" data-s="m1" data-f="note">${esc(s.m1.note)}</textarea></div>`;
+    <p style="font-size:12px;margin-bottom:8px;color:#64748b">Đơn vị tính: 1.000 đồng</p>
+    <div id="rows_m1">`;
+  if(s.m1.hasIncome === '1'){
+    m1 += s.m1.rows.map((r,i)=>renderM1Row(r,i)).join('');
+  }
+  m1 += `</div>
+    ${s.m1.hasIncome === '1' ? `<button class="btn btn-primary btn-block add-row" data-m="m1" style="margin-top:8px">+ Thêm thành viên</button>` : ''}`;
+  
+  // MUC 2-5 Generic
+  const buildGeneric = (key, title) => {
+    let html = radioHTML(key, s[key].hasIncome);
+    if(s[key].hasIncome === '1'){
+      html += `<div id="rows_${key}">`;
+      html += s[key].rows.map((r,i)=>renderGenericRow(key, r, i, 'Nguồn thu', key==='m3'||key==='m5'?'Giống':'Giống', key==='m3'||key==='m5'?'Thức ăn':'Phân bón')).join('');
+      html += `</div><button class="btn btn-primary btn-block add-row" data-m="${key}" style="margin-top:8px">+ Thêm nguồn thu</button>`;
+    }
+    return html;
+  };
 
-  const m2 = `<div id="membersList"></div><button class="btn btn-primary btn-block" id="addMemberBtn" style="margin-top:8px">+ Thêm thành viên</button>`;
-  const m3 = `<div id="jobsList"></div><button class="btn btn-primary btn-block" id="addJobBtn" style="margin-top:8px">+ Thêm công việc</button>`;
+  // MUC 6
+  let m6 = radioHTML('m6', s.m6.hasIncome);
+  if(s.m6.hasIncome === '1'){
+    m6 += `<div id="rows_m6">`;
+    m6 += s.m6.rows.map((r,i)=>renderM6Row(r,i)).join('');
+    m6 += `</div><button class="btn btn-primary btn-block add-row" data-m="m6" style="margin-top:8px">+ Thêm hoạt động</button>`;
+  }
 
-  const m4 = `<div class="form-group"><label>Tiền lương (đ/năm)</label><input type="number" min="0" data-s="m4" data-f="salary" value="${esc(s.m4.salary)}"></div>
-    <div class="form-group"><label>Phụ cấp (đ/năm)</label><input type="number" min="0" data-s="m4" data-f="allowance" value="${esc(s.m4.allowance)}"></div>
-    <div class="form-group"><label>Tiền thưởng (đ/năm)</label><input type="number" min="0" data-s="m4" data-f="bonus" value="${esc(s.m4.bonus)}"></div>
-    <div class="form-group"><label>Thu nhập khác (đ/năm)</label><input type="number" min="0" data-s="m4" data-f="other" value="${esc(s.m4.other)}"></div>`;
+  // MUC 7
+  let m7 = radioHTML('m7', s.m7.hasIncome);
+  if(s.m7.hasIncome === '1'){
+    m7 += `<div class="sub-label">1. Thu nhập từ các nguồn hỗ trợ bên ngoài</div>
+      <div class="form-group"><label>1.1 Tiền và giá trị hiện vật nhận được</label><input type="number" min="0" data-m7f="r11" value="${esc(s.m7.r11)}"></div>
+      <div class="form-group"><label>1.2 Trợ cấp xã hội đột xuất</label><input type="number" min="0" data-m7f="r12" value="${esc(s.m7.r12)}"></div>
+      
+      <div class="sub-label">2. Thu nhập từ sở hữu tài sản, đầu tư tài chính</div>
+      <div class="form-group"><label>2.1 Thuê tài sản, đất đai</label><input type="number" min="0" data-m7f="r21" value="${esc(s.m7.r21)}"></div>
+      <div class="form-group"><label>2.2 Lãi đầu tư, tiết kiệm, cổ phần</label><input type="number" min="0" data-m7f="r22" value="${esc(s.m7.r22)}"></div>
+      
+      <div class="sub-label">3. Thu nhập khác</div>
+      <div class="form-group"><label>VD: Trúng số, xổ số...</label><input type="number" min="0" data-m7f="r3" value="${esc(s.m7.r3)}"></div>`;
+  }
 
-  const m5 = `<div class="form-group"><label>Trồng trọt (đ/năm)</label><input type="number" min="0" data-s="m5" data-f="crop" value="${esc(s.m5.crop)}"></div>
-    <div class="form-group"><label>Chăn nuôi (đ/năm)</label><input type="number" min="0" data-s="m5" data-f="livestock" value="${esc(s.m5.livestock)}"></div>
-    <div class="form-group"><label>Lâm nghiệp (đ/năm)</label><input type="number" min="0" data-s="m5" data-f="forestry" value="${esc(s.m5.forestry)}"></div>
-    <div class="form-group"><label>Thủy sản (đ/năm)</label><input type="number" min="0" data-s="m5" data-f="fishery" value="${esc(s.m5.fishery)}"></div>
-    <div class="form-group"><label>Chi phí sản xuất (đ/năm)</label><input type="number" min="0" data-s="m5" data-f="cost" value="${esc(s.m5.cost)}"></div>`;
-
-  const m6 = `<div class="form-group"><label>Kinh doanh (đ/năm)</label><input type="number" min="0" data-s="m6" data-f="business" value="${esc(s.m6.business)}"></div>
-    <div class="form-group"><label>Dịch vụ (đ/năm)</label><input type="number" min="0" data-s="m6" data-f="service" value="${esc(s.m6.service)}"></div>
-    <div class="form-group"><label>Tiểu thủ công (đ/năm)</label><input type="number" min="0" data-s="m6" data-f="craft" value="${esc(s.m6.craft)}"></div>
-    <div class="form-group"><label>Cho thuê (đ/năm)</label><input type="number" min="0" data-s="m6" data-f="rental" value="${esc(s.m6.rental)}"></div>
-    <div class="form-group"><label>Chi phí (đ/năm)</label><input type="number" min="0" data-s="m6" data-f="cost" value="${esc(s.m6.cost)}"></div>`;
-
-  const m7 = `<div class="form-group"><label>Lương hưu (đ/năm)</label><input type="number" min="0" data-s="m7" data-f="pension" value="${esc(s.m7.pension)}"></div>
-    <div class="form-group"><label>Trợ cấp (đ/năm)</label><input type="number" min="0" data-s="m7" data-f="socialAllowance" value="${esc(s.m7.socialAllowance)}"></div>
-    <div class="form-group"><label>Quà biếu (đ/năm)</label><input type="number" min="0" data-s="m7" data-f="gift" value="${esc(s.m7.gift)}"></div>
-    <div class="form-group"><label>Kiều hối (đ/năm)</label><input type="number" min="0" data-s="m7" data-f="remittance" value="${esc(s.m7.remittance)}"></div>
-    <div class="form-group"><label>Khác (đ/năm)</label><input type="number" min="0" data-s="m7" data-f="other" value="${esc(s.m7.other)}"></div>`;
-
-  return sectionHTML(1,'Thông tin định danh hộ', m1) + sectionHTML(2,'Thành viên hộ', m2) +
-         sectionHTML(3,'Việc làm & nghề nghiệp', m3) + sectionHTML(4,'Thu nhập lương, công', m4) +
-         sectionHTML(5,'Thu nhập nông - lâm - thủy sản', m5) + sectionHTML(6,'Thu nhập phi nông nghiệp', m6) +
-         sectionHTML(7,'Thu nhập khác', m7) + `<div class="totals-box" id="totalsBox"></div>`;
+  return `<div style="background:#e0e7ff;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;color:#3730a3;font-weight:600">💡 Đơn vị tính: 1.000 đồng</div>
+    ${sectionHTML(1, 'Mục 1: Thu nhập từ tiền lương, tiền công', m1)}
+    ${sectionHTML(2, 'Mục 2: Thu nhập từ trồng trọt', buildGeneric('m2', 'Trồng trọt'))}
+    ${sectionHTML(3, 'Mục 3: Thu nhập từ chăn nuôi', buildGeneric('m3', 'Chăn nuôi'))}
+    ${sectionHTML(4, 'Mục 4: Thu nhập từ lâm nghiệp', buildGeneric('m4', 'Lâm nghiệp'))}
+    ${sectionHTML(5, 'Mục 5: Thu nhập từ thủy sản', buildGeneric('m5', 'Thủy sản'))}
+    ${sectionHTML(6, 'Mục 6: Thu nhập từ SXKD phi nông, lâm, thủy sản', m6)}
+    ${sectionHTML(7, 'Mục 7: Thu nhập khác', m7)}
+    <div class="totals-box" id="totalsBox"></div>`;
 }
 
-function renderMembers(){
-  const container = document.getElementById('membersList');
-  if(!container) return;
-  const members = currentSurvey.m2.members;
-  if(!members.length){ container.innerHTML = '<div class="empty-small">Chưa có thành viên.</div>'; return; }
-  container.innerHTML = members.map((m,i)=>memberCardHTML(i,m)).join('');
-  container.querySelectorAll('.del-member').forEach(b=>{
-    b.onclick = ()=>{ if(confirm('Xoá thành viên?')){ members.splice(parseInt(b.dataset.idx),1); renderMembers(); } };
-  });
-  container.querySelectorAll('[data-mfield]').forEach(inp=>{
-    inp.oninput = inp.onchange = ()=>{
-      const idx = parseInt(inp.closest('.member-card').dataset.idx);
-      members[idx][inp.dataset.mfield] = inp.value;
+function setHasIncome(key, val){
+  currentSurvey[key].hasIncome = val;
+  // Re-render the specific section body
+  const body = document.getElementById('surveyBody');
+  body.innerHTML = buildSurveyHTML(currentHousehold);
+  bindSurveyEvents();
+  updateTotals();
+}
+
+function bindSurveyEvents(){
+  const body = document.getElementById('surveyBody');
+  
+  // Scalar M1 inputs
+  body.querySelectorAll('[data-m1f]').forEach(inp=>{
+    inp.oninput = ()=>{
+      currentSurvey.m1[inp.dataset.m1f] = inp.value;
+      updateTotals();
     };
   });
-}
 
-function renderJobs(){
-  const container = document.getElementById('jobsList');
-  if(!container) return;
-  const jobs = currentSurvey.m3.jobs;
-  if(!jobs.length){ container.innerHTML = '<div class="empty-small">Chưa có công việc.</div>'; return; }
-  container.innerHTML = jobs.map((j,i)=>jobCardHTML(i,j)).join('');
-  container.querySelectorAll('.del-job').forEach(b=>{
-    b.onclick = ()=>{ if(confirm('Xoá công việc?')){ jobs.splice(parseInt(b.dataset.idx),1); renderJobs(); } };
+  // Scalar M7 inputs
+  body.querySelectorAll('[data-m7f]').forEach(inp=>{
+    inp.oninput = ()=>{
+      currentSurvey.m7[inp.dataset.m7f] = inp.value;
+      updateTotals();
+    };
   });
-  container.querySelectorAll('[data-jfield]').forEach(inp=>{
-    inp.oninput = inp.onchange = ()=>{
-      const idx = parseInt(inp.closest('.job-card').dataset.idx);
-      jobs[idx][inp.dataset.jfield] = inp.value;
+
+  // Row inputs (M1-M6)
+  body.querySelectorAll('[data-m][data-idx][data-f]').forEach(inp=>{
+    inp.oninput = ()=>{
+      const m = inp.dataset.m, idx = parseInt(inp.dataset.idx), f = inp.dataset.f;
+      currentSurvey[m].rows[idx][f] = inp.value;
+      updateTotals();
+    };
+  });
+
+  // Delete row
+  body.querySelectorAll('.del-row').forEach(b=>{
+    b.onclick = ()=>{
+      if(confirm('Xóa dòng này?')){
+        const m = b.dataset.m, idx = parseInt(b.dataset.idx);
+        currentSurvey[m].rows.splice(idx, 1);
+        setHasIncome(m, currentSurvey[m].hasIncome); // force re-render
+      }
+    };
+  });
+
+  // Add row
+  body.querySelectorAll('.add-row').forEach(b=>{
+    b.onclick = ()=>{
+      const m = b.dataset.m;
+      currentSurvey[m].rows.push({});
+      setHasIncome(m, currentSurvey[m].hasIncome); // force re-render
+    };
+  });
+
+  // Toggle section
+  body.querySelectorAll('.survey-section-header').forEach(hdr=>{
+    hdr.onclick = ()=>{
+      const n = hdr.dataset.section; const b = body.querySelector(`[data-body="${n}"]`);
+      hdr.classList.toggle('open'); b.classList.toggle('open');
     };
   });
 }
@@ -798,15 +863,18 @@ function updateTotals(){
   const box = document.getElementById('totalsBox');
   if(box){
     box.innerHTML = `
-      <div class="row"><span>Mục 4:</span><b>${fmt(t.m4)} đ</b></div>
-      <div class="row"><span>Mục 5:</span><b>${fmt(t.m5)} đ</b></div>
-      <div class="row"><span>Mục 6:</span><b>${fmt(t.m6)} đ</b></div>
-      <div class="row"><span>Mục 7:</span><b>${fmt(t.m7)} đ</b></div>
-      <div class="row total"><span>TỔNG THU NHẬP:</span><b>${fmt(t.total)} đ</b></div>
-      <div class="row pc"><span>TNBQ/năm:</span><b>${fmt(t.perCapita)} đ</b></div>`;
+      <div class="row"><span>Mục 1 (Lương):</span><b>${fmt(t.m1)}</b></div>
+      <div class="row"><span>Mục 2 (Trồng trọt):</span><b>${fmt(t.m2)}</b></div>
+      <div class="row"><span>Mục 3 (Chăn nuôi):</span><b>${fmt(t.m3)}</b></div>
+      <div class="row"><span>Mục 4 (Lâm nghiệp):</span><b>${fmt(t.m4)}</b></div>
+      <div class="row"><span>Mục 5 (Thủy sản):</span><b>${fmt(t.m5)}</b></div>
+      <div class="row"><span>Mục 6 (Phi nông):</span><b>${fmt(t.m6)}</b></div>
+      <div class="row"><span>Mục 7 (Khác):</span><b>${fmt(t.m7)}</b></div>
+      <div class="row total"><span>TỔNG THU NHẬP (Nghìn đ):</span><b>${fmt(t.total)}</b></div>
+      <div class="row pc"><span>TNBQ/người/năm (Nghìn đ):</span><b>${fmt(t.perCapita)}</b></div>`;
   }
   const inc = document.getElementById('surveyIncome');
-  if(inc) inc.textContent = `TNBQ: ${fmt(t.perCapita)} đ/người/năm · ${t.members} nhân khẩu`;
+  if(inc) inc.textContent = `TNBQ: ${fmt(t.perCapita)} nghìn đ/năm · ${t.members} nhân khẩu`;
 }
 
 function openSurvey(idx){
@@ -817,20 +885,12 @@ function openSurvey(idx){
   ensureSurvey(h);
   currentHousehold = h; currentSurvey = h.survey; currentHouseholdIdx = idx;
   document.getElementById('surveyTitle').textContent = `Hộ ${h.stt} — ${h.name}`;
+  
   const body = document.getElementById('surveyBody');
   body.innerHTML = buildSurveyHTML(h);
-  body.querySelectorAll('[data-s][data-f]').forEach(inp=>{
-    inp.oninput = inp.onchange = ()=>{ currentSurvey[inp.dataset.s][inp.dataset.f] = inp.value; updateTotals(); };
-  });
-  body.querySelectorAll('.survey-section-header').forEach(hdr=>{
-    hdr.onclick = ()=>{
-      const n = hdr.dataset.section; const b = body.querySelector(`[data-body="${n}"]`);
-      hdr.classList.toggle('open'); b.classList.toggle('open');
-    };
-  });
-  document.getElementById('addMemberBtn').onclick = ()=>{ currentSurvey.m2.members.push({}); renderMembers(); };
-  document.getElementById('addJobBtn').onclick = ()=>{ currentSurvey.m3.jobs.push({}); renderJobs(); };
-  renderMembers(); renderJobs(); updateTotals();
+  bindSurveyEvents();
+  updateTotals();
+  
   document.getElementById('surveyOverlay').classList.add('show');
 }
 
@@ -841,6 +901,9 @@ function closeSurvey(){
   renderAll();
 }
 
+/* ================================================================ */
+/* DELETE / ADD / EXPORT                                            */
+/* ================================================================ */
 function deleteStatus0(){
   const list = households[state.currentArea];
   const toDelete = list.filter(h=>h.status===0);
@@ -883,12 +946,13 @@ function exportBasic(){
 }
 
 function exportDetail(){
-  const rows = [['Địa bàn','STT','Tên chủ hộ','Số khẩu','Nữ','M4','M5','M6','M7','Tổng','TNBQ','Đã thu thập']];
+  const rows = [['Địa bàn','STT','Tên chủ hộ','Số khẩu','M1(Lương)','M2(Trồng trọt)','M3(Chăn nuôi)','M4(Lâm)','M5(Thủy)','M6(Phi nông)','M7(Khác)','Tổng (Nghìn đ)','TNBQ (Nghìn đ)']];
   Object.keys(AREAS).forEach(code=>{
     (households[code]||[]).forEach(h=>{
       if(h.status === 0) return;
       const t = calcTotals(h);
-      rows.push([AREAS[code].name, h.stt, h.name, h.survey?.m1?.actualMembers||0, h.survey?.m1?.femaleMembers||0, t.m4, t.m5, t.m6, t.m7, t.total, Math.round(t.perCapita), surveyIsDone(h)?'Có':'Chưa']);
+      rows.push([AREAS[code].name, h.stt, h.name, h.survey?.m1?.actualMembers||0, 
+        t.m1, t.m2, t.m3, t.m4, t.m5, t.m6, t.m7, t.total, Math.round(t.perCapita)]);
     });
   });
   downloadCSV(rows, 'ChiTiet');
@@ -924,14 +988,12 @@ document.getElementById('selClearBtn').onclick = clearSelection;
 window.addEventListener('online', ()=>{ if(firebaseReady) updateSyncIndicator('ready', 'Sẵn sàng'); });
 window.addEventListener('offline', ()=>{ updateSyncIndicator('offline', 'Mất mạng'); });
 
-/* KHỞI ĐỘNG: Tải local -> render -> kết nối Firebase -> tải mới nhất từ Firebase */
 loadLocalData();
 renderAll();
 
 if (firebaseReady) {
-  // Tự động tải dữ liệu mới nhất từ Firebase khi mở app
   loadFromFirebase(true).then(success => {
-    if (success) startRealtimeListener(); // Bật lắng nghe thời gian thực
+    if (success) startRealtimeListener();
   }).catch(() => {});
 }
 </script>
