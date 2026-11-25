@@ -280,11 +280,9 @@ function loadFromFirebase(silent){
           resolve(false); return;
         }
         households = data;
-        // Đảm bảo đủ các địa bàn
         Object.keys(AREAS).forEach(code=>{
           if(!households[code]) households[code] = parseArea(code);
         });
-        // Cập nhật lại localStorage
         localStorage.setItem(STORAGE_KEY, JSON.stringify(households));
         renderAll();
         updateSyncIndicator('synced', 'Đã tải về');
@@ -307,7 +305,6 @@ function startRealtimeListener(){
   db.ref('dttn2026_data').on('value', snap=>{
     const data = snap.val();
     if(!data) return;
-    // So sánh nhanh để tránh render vô ích
     const newStr = JSON.stringify(data);
     if(newStr === JSON.stringify(households)) return;
     households = data;
@@ -324,8 +321,7 @@ function startRealtimeListener(){
 /* DỮ LIỆU GỐC                                                       */
 /* ================================================================ */
 const AREAS = {
-  "001": { name: "Thôn Kạch Lớn 1", short: "Kạch Lớn 1",
-    data: [
+  "001": { name: "Thôn Kạch Lớn 1", short: "Kạch Lớn 1", data: [
 "0001|A Hổ|5|2|1","0002|A Đế|4|2|1","0003|Y Ngrăn (Y Ngren)|1|1|1","0004|A Hà|4||1","0005|Y Nâu|3|2|1",
 "0006|A Thoại|5|1|1","0007|Y Nấu|4|2|1","0008|A Độ|2|1|1","0009|Y Ơn|4||1","0010|A Nhá|2|1|1",
 "0011|A Nân|2||1","0012|Y Xuyên|3||1","0013|Y Thảo|2|1|1","0014|A Nhất|2|1|1","0015|A Blim|3||1",
@@ -345,13 +341,12 @@ const AREAS = {
 "0081|A Bang|3|2|1","0082|A Hư|3|1|1","0083|A Nốp|6|1|1","0084|A Kuối|5|3|1","0085|A Câu|3|2|1",
 "0086|A Thương|1||1","0087|Y Cuốn|3||1","0088|A Thui|3||1","0089|A Đạo|3||1","0090|A Hậu|3|2|1",
 "0091|A Hư|5||1","0092|Bùi Văn Ba|2||1","0093|A Dừa|5|2|1","0094|Trần Văn Hoàng|3|1|1"
-    ]
-  },
-  "002": { name: "Thôn Kạch Lớn 2", short: "Kạch Lớn 2",
-    data: [
+  ]},
+  "002": { name: "Thôn Kạch Lớn 2", short: "Kạch Lớn 2", data: [
 "0001|A Lơng|3|2|1","0002|A Lên|4|2|1","0003|Y Xuân|2|1|1","0004|A Linh|2|1|1","0005|A Vông|2|1|1",
 "0006|A Veng|2|1|1","0007|Y Khám|4|2|1","0008|Y Liêu|2|1|1","0009|A Lum|3|1|1","0010|A Val|2|1|1",
 "0011|A Đinh|3|1|1","0012|A Klé|3||1","0013|Y Dúp|5||1","0014|Y Phi|7|2|1","0015|Y Vuôn|2||1",
 "0016|Y Ngrơn|3|3|1","0017|Y Ăc|4|2|1","0018|Y Noát|2|1|1","0019|A Khen|3||1","0020|Y Thu|2|1|1",
 "0021|Y Nái|1||1","0022|A Pre|1||1","0023|Y Thân|3||1","0024|A Nưng|4|2|1","0025|A Hùng|3||1",
-"0026|Y Giăng|2||1","0027|Y Dương|2||1
+"0026|Y Giăng|2||1","0027|Y Dương|2||1","0028|A Vúi|6|3|1","0029|A Nhác|2|1|1","0030|Y Lâm|3||1",
+"0031|A Nối|3|1|1","0032|A Liêu|3|1|
