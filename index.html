@@ -105,6 +105,7 @@ select.filter{padding:10px 8px;border:1.5px solid #e2e8f0;border-radius:10px;fon
 .row-header b{font-size:13px;color:#334155}
 .btn-icon{background:#fee2e2;color:#991b1b;border:none;border-radius:6px;padding:4px 8px;font-size:13px;cursor:pointer}
 .sub-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px;margin-top:8px}
+.calc-display{font-size:13px;font-weight:700;color:#1e40af;background:#eff6ff;padding:6px 10px;border-radius:6px;margin-top:4px;display:flex;justify-content:space-between}
 .totals-box{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:10px;padding:12px;margin:10px 0;font-size:13px}
 .totals-box .row{display:flex;justify-content:space-between;padding:3px 0}
 .totals-box .row.total{font-weight:700;font-size:15px;color:#1e40af;padding-top:8px;margin-top:6px;border-top:1.5px dashed #93c5fd}
@@ -309,8 +310,44 @@ function startRealtimeListener(){
 }
 
 /* ================================================================ */
-/* DỮ LIỆU GỐC                                                       */
+/* DỮ LIỆU GỐC & DANH MỤC                                            */
 /* ================================================================ */
+const CATEGORIES = {
+  m2: [
+    "Cây lương thực, thực phẩm",
+    "Cây công nghiệp hàng năm",
+    "Cây công nghiệp lâu năm",
+    "Cây ăn quả",
+    "Sản phẩm phụ và sản phẩm thu nhặt từ trồng trọt",
+    "Dịch vụ trồng trọt",
+    "Tiền được đền bù/hỗ trợ thiệt hại"
+  ],
+  m3: [
+    "Gia súc",
+    "Gia cầm",
+    "Chăn nuôi khác",
+    "Sản phẩm không qua giết mổ",
+    "Sản phẩm phụ chăn nuôi",
+    "Dịch vụ chăn nuôi",
+    "Săn bắt, đánh bẫy",
+    "Tiền được đền bù/hỗ trợ thiệt hại"
+  ],
+  m4: [
+    "Khai thác, thu nhặt lâm sản",
+    "Ươm giống cây lâm nghiệp",
+    "Trồng, chăm sóc, tạo rừng",
+    "Dịch vụ lâm nghiệp",
+    "Tiền được đền bù/hỗ trợ thiệt hại"
+  ],
+  m5: [
+    "Nuôi trồng thủy sản",
+    "Đánh bắt thủy sản",
+    "Sản xuất giống",
+    "Dịch vụ thủy sản",
+    "Tiền được đền bù/hỗ trợ thiệt hại"
+  ]
+};
+
 const AREAS = {
   "001": { name: "Thôn Kạch Lớn 1", short: "Kạch Lớn 1", data: [
 "0001|A Hổ|5|2|1","0002|A Đế|4|2|1","0003|Y Ngrăn (Y Ngren)|1|1|1","0004|A Hà|4||1","0005|Y Nâu|3|2|1",
@@ -460,11 +497,7 @@ function ensureSurvey(h){
       if(!h.survey[k]) h.survey[k] = d[k];
       if(d[k].rows && !Array.isArray(h.survey[k].rows)) h.survey[k].rows = [];
     }
-    
-    // MIGRATION: Chuyển số nhân khẩu từ m1 sang m0 nếu m0 chưa có
-    if(!h.survey.m0) {
-      h.survey.m0 = defaultSurvey().m0;
-    }
+    if(!h.survey.m0) h.survey.m0 = defaultSurvey().m0;
     if(!h.survey.m0.actualMembers && h.survey.m1.actualMembers) {
       h.survey.m0.actualMembers = h.survey.m1.actualMembers;
       h.survey.m0.femaleMembers = h.survey.m1.femaleMembers;
@@ -505,7 +538,7 @@ function calcTotals(h){
   const m7 = s.m7.hasIncome === '2' ? 0 : (num(s.m7.r11) + num(s.m7.r12) + num(s.m7.r21) + num(s.m7.r22) + num(s.m7.r3));
 
   const total = m1 + m2 + m3 + m4 + m5 + m6 + m7;
-  const members = num(s.m0?.actualMembers) || 1; // Lấy từ m0
+  const members = num(s.m0?.actualMembers) || 1;
 
   return { m1, m2, m3, m4, m5, m6, m7, total, perCapita: total/members, members };
 }
@@ -669,7 +702,7 @@ function deleteSelected(){
 /* SURVEY FORM                                                      */
 /* ================================================================ */
 function sectionHTML(n, title, bodyHTML){
-  const isOpen = n <= 1; // Mở m0 và m1 mặc định
+  const isOpen = n <= 1; 
   return `<div class="survey-section">
     <div class="survey-section-header ${isOpen?'open':''}" data-section="${n}">
       <div class="num">${n}</div><div class="title">${title}</div><div class="arrow">▶</div>
@@ -697,32 +730,53 @@ function renderM1Row(r, i){
       <div class="form-group"><label>Cột 2: Hưu/trợ cấp</label><input type="number" min="0" data-m="m1" data-idx="${i}" data-f="c2" value="${esc(r.c2)}"></div>
       <div class="form-group"><label>Cột 3: Trợ cấp XH</label><input type="number" min="0" data-m="m1" data-idx="${i}" data-f="c3" value="${esc(r.c3)}"></div>
     </div>
+    <div class="calc-display"><span>Tổng thu nhập dòng này:</span> <span>${fmt(calcRowTotal('m1', r))} nghìn đ</span></div>
   </div>`;
 }
 
 function renderGenericRow(mKey, r, i, titleLabel, c4Label, c5Label){
   r = r || {};
+  const totalIn = num(r.c1) + num(r.c2);
+  const totalOut = num(r.c4) + num(r.c5) + num(r.c6);
+  const income = totalIn - totalOut;
+  
+  const catOptions = (CATEGORIES[mKey] || []).map(c => `<option value="${esc(c)}" ${r.name===c?'selected':''}>${esc(c)}</option>`).join('');
+  const selectHTML = `<select data-m="${mKey}" data-idx="${i}" data-f="name">
+    <option value="">-- Chọn danh mục --</option>
+    ${catOptions}
+  </select>`;
+
   return `<div class="row-card" data-idx="${i}">
     <div class="row-header"><b>Mục ${i+1}</b><button class="btn-icon del-row" data-m="${mKey}" data-idx="${i}">🗑</button></div>
-    <div class="form-group"><label>${titleLabel}</label><input data-m="${mKey}" data-idx="${i}" data-f="name" value="${esc(r.name)}"></div>
+    <div class="form-group"><label>${titleLabel} (Cột B)</label>${selectHTML}</div>
     
-    <div class="sub-label">Tổng thu</div>
+    <div class="sub-label">Tổng thu (Cột 1, 2)</div>
     <div class="form-row">
       <div class="form-group"><label>Cột 1: Bán/Đổi</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c1" value="${esc(r.c1)}"></div>
       <div class="form-group"><label>Cột 2: Để lại/Dùng</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c2" value="${esc(r.c2)}"></div>
     </div>
 
-    <div class="sub-label">Chi phí</div>
+    <div class="sub-label">Chi phí (Cột 4, 5, 6)</div>
     <div class="form-row-3">
       <div class="form-group"><label>Cột 4: ${c4Label}</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c4" value="${esc(r.c4)}"></div>
       <div class="form-group"><label>Cột 5: ${c5Label}</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c5" value="${esc(r.c5)}"></div>
       <div class="form-group"><label>Cột 6: Khác</label><input type="number" min="0" data-m="${mKey}" data-idx="${i}" data-f="c6" value="${esc(r.c6)}"></div>
+    </div>
+
+    <div class="calc-display" style="flex-direction:column;gap:4px">
+      <div style="display:flex;justify-content:space-between"><span>Cột 3 (Tổng giá trị):</span> <span>${fmt(totalIn)}</span></div>
+      <div style="display:flex;justify-content:space-between;color:#b91c1c"><span>Cột 7 (Tổng chi phí):</span> <span>${fmt(totalOut)}</span></div>
+      <div style="display:flex;justify-content:space-between;color:#166534;border-top:1px dashed #93c5fd;padding-top:4px;margin-top:2px"><span>Cột 8 (Thu nhập):</span> <span>${fmt(income)}</span></div>
     </div>
   </div>`;
 }
 
 function renderM6Row(r, i){
   r = r || {};
+  const totalIn = num(r.c1) + num(r.c2);
+  const totalOut = num(r.c4) + num(r.c5) + num(r.c6);
+  const income = totalIn - totalOut;
+  
   return `<div class="row-card" data-idx="${i}">
     <div class="row-header"><b>Hoạt động ${i+1}</b><button class="btn-icon del-row" data-m="m6" data-idx="${i}">🗑</button></div>
     <div class="form-group"><label>Mô tả hoạt động</label><input data-m="m6" data-idx="${i}" data-f="name" value="${esc(r.name)}"></div>
@@ -738,6 +792,12 @@ function renderM6Row(r, i){
       <div class="form-group"><label>Cột 4: Nguyên vật liệu</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c4" value="${esc(r.c4)}"></div>
       <div class="form-group"><label>Cột 5: Năng lượng</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c5" value="${esc(r.c5)}"></div>
       <div class="form-group"><label>Cột 6: Chi khác</label><input type="number" min="0" data-m="m6" data-idx="${i}" data-f="c6" value="${esc(r.c6)}"></div>
+    </div>
+    
+    <div class="calc-display" style="flex-direction:column;gap:4px">
+      <div style="display:flex;justify-content:space-between"><span>Cột 3 (Tổng thu):</span> <span>${fmt(totalIn)}</span></div>
+      <div style="display:flex;justify-content:space-between;color:#b91c1c"><span>Cột 7 (Tổng chi):</span> <span>${fmt(totalOut)}</span></div>
+      <div style="display:flex;justify-content:space-between;color:#166534;border-top:1px dashed #93c5fd;padding-top:4px;margin-top:2px"><span>Cột 8 (Thu nhập):</span> <span>${fmt(income)}</span></div>
     </div>
   </div>`;
 }
@@ -823,11 +883,17 @@ function buildSurveyHTML(h){
   }
   
   // MUC 2-5 Generic
-  const buildGeneric = (key, title) => {
+  const buildGeneric = (key) => {
     let html = radioHTML(key, s[key].hasIncome);
     if(s[key].hasIncome === '1'){
       html += `<div id="rows_${key}">`;
-      html += s[key].rows.map((r,i)=>renderGenericRow(key, r, i, 'Nguồn thu', key==='m3'||key==='m5'?'Giống':'Giống', key==='m3'||key==='m5'?'Thức ăn':'Phân bón')).join('');
+      // Tùy chỉnh nhãn chi phí theo mục
+      let c4 = 'Giống', c5 = 'Phân bón';
+      if(key === 'm3') { c4 = 'Giống'; c5 = 'Thức ăn'; }
+      if(key === 'm4') { c4 = 'Giống'; c5 = 'Phân bón'; }
+      if(key === 'm5') { c4 = 'Giống'; c5 = 'Thức ăn'; }
+      
+      html += s[key].rows.map((r,i)=>renderGenericRow(key, r, i, 'Nguồn thu', c4, c5)).join('');
       html += `</div><button class="btn btn-primary btn-block add-row" data-m="${key}" style="margin-top:8px">+ Thêm nguồn thu</button>`;
     }
     return html;
@@ -859,10 +925,10 @@ function buildSurveyHTML(h){
   return `<div style="background:#e0e7ff;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;color:#3730a3;font-weight:600">💡 Đơn vị tính: 1.000 đồng</div>
     ${sectionHTML(0, 'Mục 0: Thông tin chung', m0)}
     ${sectionHTML(1, 'Mục 1: Thu nhập từ tiền lương, tiền công', m1)}
-    ${sectionHTML(2, 'Mục 2: Thu nhập từ trồng trọt', buildGeneric('m2', 'Trồng trọt'))}
-    ${sectionHTML(3, 'Mục 3: Thu nhập từ chăn nuôi', buildGeneric('m3', 'Chăn nuôi'))}
-    ${sectionHTML(4, 'Mục 4: Thu nhập từ lâm nghiệp', buildGeneric('m4', 'Lâm nghiệp'))}
-    ${sectionHTML(5, 'Mục 5: Thu nhập từ thủy sản', buildGeneric('m5', 'Thủy sản'))}
+    ${sectionHTML(2, 'Mục 2: Thu nhập từ trồng trọt', buildGeneric('m2'))}
+    ${sectionHTML(3, 'Mục 3: Thu nhập từ chăn nuôi', buildGeneric('m3'))}
+    ${sectionHTML(4, 'Mục 4: Thu nhập từ lâm nghiệp', buildGeneric('m4'))}
+    ${sectionHTML(5, 'Mục 5: Thu nhập từ thủy sản', buildGeneric('m5'))}
     ${sectionHTML(6, 'Mục 6: Thu nhập từ SXKD phi nông, lâm, thủy sản', m6)}
     ${sectionHTML(7, 'Mục 7: Thu nhập khác', m7)}
     <div class="totals-box" id="totalsBox"></div>`;
@@ -883,7 +949,7 @@ function bindSurveyEvents(){
   body.querySelectorAll('[data-m0f]').forEach(inp=>{
     inp.oninput = inp.onchange = ()=>{
       currentSurvey.m0[inp.dataset.m0f] = inp.value;
-      if(inp.dataset.m0f === 'actualMembers') updateTotals(); // Tính lại TNBQ
+      if(inp.dataset.m0f === 'actualMembers') updateTotals(); 
     };
   });
 
@@ -897,9 +963,32 @@ function bindSurveyEvents(){
 
   // Row inputs (M1-M6)
   body.querySelectorAll('[data-m][data-idx][data-f]').forEach(inp=>{
-    inp.oninput = ()=>{
+    inp.oninput = inp.onchange = ()=>{
       const m = inp.dataset.m, idx = parseInt(inp.dataset.idx), f = inp.dataset.f;
       currentSurvey[m].rows[idx][f] = inp.value;
+      
+      // Cập nhật lại hiển thị tính toán ngay trên dòng đó nếu có
+      if(m !== 'm1'){
+        const rowCard = inp.closest('.row-card');
+        const r = currentSurvey[m].rows[idx];
+        const totalIn = (parseFloat(r.c1)||0) + (parseFloat(r.c2)||0);
+        const totalOut = (parseFloat(r.c4)||0) + (parseFloat(r.c5)||0) + (parseFloat(r.c6)||0);
+        const income = totalIn - totalOut;
+        
+        const displayDiv = rowCard.querySelector('.calc-display');
+        if(displayDiv){
+          displayDiv.innerHTML = `
+            <div style="display:flex;justify-content:space-between"><span>Cột 3 (Tổng giá trị):</span> <span>${fmt(totalIn)}</span></div>
+            <div style="display:flex;justify-content:space-between;color:#b91c1c"><span>Cột 7 (Tổng chi phí):</span> <span>${fmt(totalOut)}</span></div>
+            <div style="display:flex;justify-content:space-between;color:#166534;border-top:1px dashed #93c5fd;padding-top:4px;margin-top:2px"><span>Cột 8 (Thu nhập):</span> <span>${fmt(income)}</span></div>
+          `;
+        }
+      } else {
+        const rowCard = inp.closest('.row-card');
+        const displayDiv = rowCard.querySelector('.calc-display');
+        if(displayDiv) displayDiv.innerHTML = `<span>Tổng thu nhập dòng này:</span> <span>${fmt(calcRowTotal('m1', currentSurvey[m].rows[idx]))} nghìn đ</span>`;
+      }
+      
       updateTotals();
     };
   });
